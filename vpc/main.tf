@@ -127,6 +127,14 @@ resource "aws_eip" "nat_ip" {
   vpc = true
 }
 
+resource "aws_eip" "nat_ip_1b" {
+  vpc = true
+}
+
+resource "aws_eip" "nat_ip_1c" {
+  vpc = true
+}
+
 resource "aws_nat_gateway" "nat_gateway_1a" {
   allocation_id = "${aws_eip.nat_ip.id}"
   subnet_id     = "${aws_subnet.public-1a.id}"
@@ -140,7 +148,7 @@ resource "aws_nat_gateway" "nat_gateway_1a" {
 }
 
 resource "aws_nat_gateway" "nat_gateway_1b" {
-  allocation_id = "${aws_eip.nat_ip.id}"
+  allocation_id = "${aws_eip.nat_ip_1b.id}"
   subnet_id     = "${aws_subnet.public-1b.id}"
   depends_on    = ["aws_internet_gateway.internet_gateway"]
 
@@ -152,7 +160,7 @@ resource "aws_nat_gateway" "nat_gateway_1b" {
 }
 
 resource "aws_nat_gateway" "nat_gateway_1c" {
-  allocation_id = "${aws_eip.nat_ip.id}"
+  allocation_id = "${aws_eip.nat_ip_1c.id}"
   subnet_id     = "${aws_subnet.public-1c.id}"
   depends_on    = ["aws_internet_gateway.internet_gateway"]
 
