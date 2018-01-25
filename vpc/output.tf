@@ -6,10 +6,6 @@ output "vpc_cidr" {
   value = "${aws_vpc.current_vpc.cidr_block}"
 }
 
-output "nat_ip" {
-  value = "${aws_nat_gateway.nat_gateway.public_ip}"
-}
-
 output "public_1a_id" {
   value = "${aws_subnet.public-1a.id}"
 }
