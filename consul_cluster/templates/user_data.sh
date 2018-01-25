@@ -22,10 +22,10 @@ export HOME=/root
 
 
 # Run ansible-pull
-cd /opt
-git clone ${ansible_pull_repo} ansible
-cd /opt/ansible
-ansible-playbook local.yml 2>&1 | tee -a /var/log/ansible-pull.log
+# cd /opt
+# git clone ${ansible_pull_repo} ansible
+# cd /opt/ansible
+# ansible-playbook local.yml 2>&1 | tee -a /var/log/ansible-pull.log
 
 # Custom userdata
 ${custom_userdata}
