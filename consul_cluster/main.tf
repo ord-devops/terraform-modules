@@ -27,21 +27,21 @@ data "aws_ami" "centos" {
 data "aws_subnet" "private_1a" {
   filter {
     name = "tag:Name"
-    values = "${var.vpc_name} private-1a"
+    values = ["${var.vpc_name} private-1a"]
   }
 }
 
 data "aws_subnet" "private_1b" {
   filter {
     name = "tag:Name"
-    values = "${var.vpc_name} private-1b"
+    values = ["${var.vpc_name} private-1b"]
   }
 }
 
 data "aws_subnet" "private_1c" {
   filter {
     name = "tag:Name"
-    values = "${var.vpc_name} private-1c"
+    values = ["${var.vpc_name} private-1c"]
   }
 }
 
