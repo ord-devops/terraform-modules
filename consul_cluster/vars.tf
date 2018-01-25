@@ -15,6 +15,17 @@ variable "vpc_name" {
   description = "name of the vpc"
 }
 
+variable "vpc_id" {
+  type = "string"
+  description = "VPC ID"
+}
+
+variable "environment" {
+  type = "string"
+  description = "describe your variable"
+  default = "dev"
+}
+
 variable "pubkey_path" {
   description = "path to public key"
 }

@@ -79,7 +79,7 @@ resource "aws_iam_instance_profile" "consul_profile" {
 }
 
 resource "aws_iam_role" "consul_role" {
-  name               = "consul_role_demo"
+  name               = "consul_role"
   assume_role_policy = "${data.aws_iam_policy_document.instance-assume-role-policy.json}"
 }
 
@@ -187,7 +187,7 @@ resource "aws_launch_configuration" "consul" {
   security_groups = ["${aws_security_group.consul.id}"]
   associate_public_ip_address = false
   key_name = "${aws_key_pair.centos.key_name}"
-  iam_instance_profile = "${aws_iam_instance_profile.jumphost_profile.name}"
+  iam_instance_profile = "${aws_iam_instance_profile.consul_profile.name}"
   user_data            = "${data.template_file.user_data.rendered}"
   
   root_block_device {
