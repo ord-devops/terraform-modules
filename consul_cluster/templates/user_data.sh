@@ -15,6 +15,7 @@ EOF
 
 chmod 0600 /root/.ssh/github_rsa
 chmod 0644 /root/.ssh/config
+ssh-keyscan github.com >> /root/.ssh/known_hosts
 
 # Ansible configuration
 yum update -y
