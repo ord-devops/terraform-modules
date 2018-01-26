@@ -24,24 +24,24 @@ data "aws_ami" "centos" {
 }
 
 
-data "aws_subnet" "private_1a" {
+data "aws_subnet" "public_1a" {
   filter {
     name = "tag:Name"
-    values = ["${var.vpc_name} private-1a"]
+    values = ["${var.vpc_name} public-1a"]
   }
 }
 
-data "aws_subnet" "private_1b" {
+data "aws_subnet" "public_1b" {
   filter {
     name = "tag:Name"
-    values = ["${var.vpc_name} private-1b"]
+    values = ["${var.vpc_name} public-1b"]
   }
 }
 
-data "aws_subnet" "private_1c" {
+data "aws_subnet" "public_1c" {
   filter {
     name = "tag:Name"
-    values = ["${var.vpc_name} private-1c"]
+    values = ["${var.vpc_name} public-1c"]
   }
 }
 
@@ -56,6 +56,7 @@ data "template_file" "user_data" {
     custom_userdata = "${var.custom_userdata}"
     ansible_version = "${var.ansible_version}"
     ansible_pull_repo = "${var.ansible_pull_repo}"
+    github_key = "${file(var.github_key)}"
       }
 }
 
@@ -185,7 +186,7 @@ resource "aws_launch_configuration" "consul" {
   image_id           = "${data.aws_ami.centos.id}"
   instance_type = "t2.micro"
   security_groups = ["${aws_security_group.consul.id}"]
-  associate_public_ip_address = false
+  associate_public_ip_address = true
   key_name = "${aws_key_pair.centos.key_name}"
   iam_instance_profile = "${aws_iam_instance_profile.consul_profile.name}"
   user_data            = "${data.template_file.user_data.rendered}"
@@ -211,7 +212,7 @@ resource "aws_autoscaling_group" "consul" {
   desired_capacity     = "3"
   force_delete         = true
   launch_configuration = "${aws_launch_configuration.consul.id}"
-  vpc_zone_identifier  = ["${data.aws_subnet.private_1a.id}","${data.aws_subnet.private_1b.id}","${data.aws_subnet.private_1c.id}"]
+  vpc_zone_identifier  = ["${data.aws_subnet.public_1a.id}","${data.aws_subnet.public_1b.id}","${data.aws_subnet.public_1c.id}"]
 
   tag {
     key                 = "Name"

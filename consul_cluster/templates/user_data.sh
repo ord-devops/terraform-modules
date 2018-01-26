@@ -1,5 +1,21 @@
 #!/bin/bash
 
+
+# Setup ssh configuration
+cat > /root/.ssh/github_rsa << EOF
+${ github_key }
+EOF
+
+cat > /root/.ssh/config << EOF
+Host github.com
+  HostName github.com
+  IdentityFile ~/.ssh/github_rsa
+  User git 
+EOF
+
+chmod 0600 /root/.ssh/github_rsa
+chmod 0644 /root/.ssh/config
+
 # Ansible configuration
 yum update -y
 yum install git -y
@@ -22,10 +38,10 @@ export HOME=/root
 
 
 # Run ansible-pull
-# cd /opt
-# git clone ${ansible_pull_repo} ansible
-# cd /opt/ansible
-# ansible-playbook local.yml 2>&1 | tee -a /var/log/ansible-pull.log
+cd /opt
+git clone ${ansible_pull_repo} ansible
+cd /opt/ansible
+ansible-playbook local.yml 2>&1 | tee -a /var/log/ansible-pull.log
 
 # Custom userdata
 ${custom_userdata}

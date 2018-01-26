@@ -30,16 +30,14 @@ variable "pubkey_path" {
   description = "path to public key"
 }
 
-variable "pubkey" {
-  description = "public keyfile name"
-}
-
 variable "privkey_path" {
   description = "path to private key"
 }
 
-variable "privkey" {
-  description = "private keyfile name"
+variable "github_key" {
+  type = "string"
+  description = "path to github private key"
+  default = "~/.ssh/github_rsa"
 }
 
 variable "custom_userdata" {
