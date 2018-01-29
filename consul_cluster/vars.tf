@@ -40,6 +40,11 @@ variable "github_key" {
   default = "~/.ssh/github_rsa"
 }
 
+variable "consul_encryption_key_path" {
+  type = "string"
+  description = "path to encrypted consul encryption key"
+}
+
 variable "custom_userdata" {
   type = "string"
   description = "userdata for inserting in cloud init script"

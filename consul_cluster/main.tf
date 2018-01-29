@@ -72,6 +72,32 @@ data "aws_iam_policy_document" "instance-assume-role-policy" {
 }
 
 
+resource "aws_s3_bucket" "secretstore" {
+  bucket = "vault-tf-secretstore"
+  acl    = "private"
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+
+  tags {
+    Name        = "secretstore"
+    Environment = "${var.environment}"
+  }
+}
+
+resource "aws_s3_bucket_object" "consul_encryptionkey" {
+  bucket = "${aws_s3_bucket.secretstore.id}"
+  key    = "consul_encryptionkey"
+  source = "${var.consul_encryption_key_path}"
+  etag   = "${md5(file(var.consul_encryption_key_path))}"
+}
+
+
 # Consul IAM instance role definition
 
 resource "aws_iam_instance_profile" "consul_profile" {
