@@ -10,10 +10,6 @@ variable "aws_profile" {
   default = "dev"
 }
 
-variable "vpc_name" {
-  type = "string"
-  description = "name of the vpc"
-}
 
 variable "vpc_id" {
   type = "string"
@@ -30,31 +26,16 @@ variable "pubkey_path" {
   description = "path to public key"
 }
 
-variable "privkey_path" {
-  description = "path to private key"
-}
 
-variable "github_key" {
+variable "consul_ami" {
   type = "string"
-  description = "path to github private key"
-  default = "~/.ssh/github_rsa"
+  description = "id of consul packer ami"
+  default = "ami-ad62f9c2"
 }
 
-variable "consul_encryption_key_path" {
-  type = "string"
-  description = "path to encrypted consul encryption key"
+variable "subnet_ids" {
+  type = "list"
+  description = "list of subnet id's to create instances in"
+
 }
 
-variable "custom_userdata" {
-  type = "string"
-  description = "userdata for inserting in cloud init script"
-  default = ""
-}
-
-variable "ansible_version" {
-  description = "Ansible version to install"
-}
-
-variable "ansible_pull_repo" {
-  description = "repository to pull ansible playbook from"
-}

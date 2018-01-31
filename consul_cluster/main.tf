@@ -9,56 +9,12 @@ terraform {
   backend "s3" {}
 }
 
-data "aws_ami" "centos" {
-  most_recent = true
-
-  filter {
-    name   = "product-code"
-    values = ["aw0evgkw8e5c1q413zgy5pjce"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-}
-
-
-data "aws_subnet" "public_1a" {
-  filter {
-    name = "tag:Name"
-    values = ["${var.vpc_name} public-1a"]
-  }
-}
-
-data "aws_subnet" "public_1b" {
-  filter {
-    name = "tag:Name"
-    values = ["${var.vpc_name} public-1b"]
-  }
-}
-
-data "aws_subnet" "public_1c" {
-  filter {
-    name = "tag:Name"
-    values = ["${var.vpc_name} public-1c"]
-  }
-}
 
 resource "aws_key_pair" "centos" {
   key_name   = "centos-key"
   public_key = "${file(var.pubkey_path)}"
 }
 
-data "template_file" "user_data" {
-  template = "${file("${path.module}/templates/user_data.sh")}"
-  vars {
-    custom_userdata = "${var.custom_userdata}"
-    ansible_version = "${var.ansible_version}"
-    ansible_pull_repo = "${var.ansible_pull_repo}"
-    github_key = "${file(var.github_key)}"
-      }
-}
 
 data "aws_iam_policy_document" "instance-assume-role-policy" {
   statement {
@@ -71,31 +27,6 @@ data "aws_iam_policy_document" "instance-assume-role-policy" {
   }
 }
 
-
-resource "aws_s3_bucket" "secretstore" {
-  bucket = "vault-tf-secretstore"
-  acl    = "private"
-
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
-
-  tags {
-    Name        = "secretstore"
-    Environment = "${var.environment}"
-  }
-}
-
-resource "aws_s3_bucket_object" "consul_encryptionkey" {
-  bucket = "${aws_s3_bucket.secretstore.id}"
-  key    = "consul_encryptionkey"
-  source = "${var.consul_encryption_key_path}"
-  etag   = "${md5(file(var.consul_encryption_key_path))}"
-}
 
 
 # Consul IAM instance role definition
@@ -209,13 +140,12 @@ resource "aws_security_group_rule" "egress_consul" {
 # Consul server autoscaling group
 resource "aws_launch_configuration" "consul" {
   name_prefix = "consul_"
-  image_id           = "${data.aws_ami.centos.id}"
+  image_id           = "${var.consul_ami}"
   instance_type = "t2.micro"
   security_groups = ["${aws_security_group.consul.id}"]
   associate_public_ip_address = true
   key_name = "${aws_key_pair.centos.key_name}"
   iam_instance_profile = "${aws_iam_instance_profile.consul_profile.name}"
-  user_data            = "${data.template_file.user_data.rendered}"
   
   root_block_device {
     volume_type = "gp2"
@@ -238,7 +168,7 @@ resource "aws_autoscaling_group" "consul" {
   desired_capacity     = "3"
   force_delete         = true
   launch_configuration = "${aws_launch_configuration.consul.id}"
-  vpc_zone_identifier  = ["${data.aws_subnet.public_1a.id}","${data.aws_subnet.public_1b.id}","${data.aws_subnet.public_1c.id}"]
+  vpc_zone_identifier  = "${var.subnet_ids}"
 
   tag {
     key                 = "Name"
